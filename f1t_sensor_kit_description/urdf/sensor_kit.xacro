@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<robot name="vehicle" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="sensor_kit_macro" params="parent x y z roll pitch yaw">
+    <!-- <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/> -->
+    <!-- <xacro:include filename="$(find vls_description)/urdf/VLS-128.urdf.xacro"/> -->
+    <!-- <xacro:include filename="$(find camera_description)/urdf/monocular_camera.xacro"/>
+    <xacro:include filename="$(find imu_description)/urdf/imu.xacro"/> -->
+
+    <xacro:arg name="gpu" default="false"/>
+    <xacro:arg name="config_dir" default="$(find f1t_sensor_kit_description)/config"/>
+    <xacro:property name="sensor_box" value="0.01"/>
+    <xacro:property name="mass" value="0.01"/>
+
+    <xacro:property name="base_link" default="base_link"/>
+
+    <joint name="${base_link}" type="fixed">
+      <origin rpy="${roll} ${pitch} ${yaw}" xyz="${x} ${y} ${z}"/>
+      <parent link="${parent}"/>
+      <child link="${base_link}"/>
+    </joint>
+    <link name="${base_link}">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </link>
+
+    <!-- sensor -->
+    <xacro:property name="calibration" value="${xacro.load_yaml('$(arg config_dir)/sensor_kit_calibration.yaml')}"/>
+
+    <!-- lidar -->
+    <joint name="lidar_joint" type="fixed">
+      <origin 
+        rpy="${calibration['base_link']['f1t_lidar']['roll']} ${calibration['base_link']['f1t_lidar']['pitch']} ${calibration['base_link']['f1t_lidar']['yaw']}" 
+        xyz="${calibration['base_link']['f1t_lidar']['x']} ${calibration['base_link']['f1t_lidar']['y']} ${calibration['base_link']['f1t_lidar']['z']}"
+      />
+      <parent link="base_link"/>
+      <child link="base_link/lidar"/>
+    </joint>
+    <link name="base_link/lidar">
+      <visual>
+        <geometry>
+          <box size="${sensor_box} ${sensor_box} ${sensor_box}"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <material name="red">
+          <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <!-- imu -->
+    <joint name="imu_joint" type="fixed">
+      <origin 
+        rpy="${calibration['base_link']['f1t_imu']['roll']} ${calibration['f1t_imu']['carla_imu']['pitch']} ${calibration['f1t_imu']['carla_imu']['yaw']}" 
+        xyz="${calibration['base_link']['f1t_imu']['x']} ${calibration['f1t_imu']['carla_imu']['y']} ${calibration['f1t_imu']['carla_imu']['z']}"
+      />
+      <parent link="base_link"/>
+      <child link="base_link/imu"/>
+    </joint>
+    <link name="base_link/imu">
+      <visual>
+        <geometry>
+          <box size="${sensor_box} ${sensor_box} ${sensor_box}"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <material name="red">
+          <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+  </xacro:macro>
+</robot>

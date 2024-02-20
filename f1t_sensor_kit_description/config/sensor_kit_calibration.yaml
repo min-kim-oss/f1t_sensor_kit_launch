@@ -1,0 +1,15 @@
+base_link:
+  f1t_lidar:
+    x: 0.16
+    y: 0.0
+    z: 0.185
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+  f1t_imu:
+    x: 0.065
+    y: 0.0
+    z: 0.04
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
